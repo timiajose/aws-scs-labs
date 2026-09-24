@@ -1,0 +1,16 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [{
+    "Sid": "DenyOutsideUsEast2ExceptBreakGlass",
+    "Effect": "Deny",
+    "NotAction": [
+      "iam:*", "sts:*", "organizations:*", "route53:*", "cloudfront:*",
+      "support:*", "budgets:*", "ce:*", "health:*", "sso:*", "identitystore:*"
+    ],
+    "Resource": "*",
+    "Condition": {
+      "StringNotEquals": { "aws:RequestedRegion": "us-east-2" },
+      "ArnNotLike": { "aws:PrincipalArn": "arn:aws:iam::*:role/BreakGlass-DR" }
+    }
+  }]
+}
