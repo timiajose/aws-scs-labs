@@ -1,0 +1,24 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "TooBroad",
+      "Effect": "Allow",
+      "Action": ["s3:*", "iam:PassRole"],
+      "Resource": "*"
+    },
+    {
+      "Sid": "TypoInAction",
+      "Effect": "Allow",
+      "Action": "s3:GetObjects",
+      "Resource": "arn:aws:s3:::my-bucket/*"
+    },
+    {
+      "Sid": "ConditionThatCanNeverMatch",
+      "Effect": "Allow",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::my-bucket/*",
+      "Condition": { "StringEquals": { "aws:SourceVpce": "vpce-0a*" } }
+    }
+  ]
+}

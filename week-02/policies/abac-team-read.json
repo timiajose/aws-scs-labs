@@ -1,0 +1,22 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ReadOnlyObjectsTaggedWithMyTeam",
+      "Effect": "Allow",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::scs-lab-w1-797273591655/*",
+      "Condition": {
+        "StringEquals": {
+          "s3:ExistingObjectTag/team": "${aws:PrincipalTag/team}"
+        }
+      }
+    },
+    {
+      "Sid": "ListBucketSoTheConsoleWorks",
+      "Effect": "Allow",
+      "Action": "s3:ListBucket",
+      "Resource": "arn:aws:s3:::scs-lab-w1-797273591655"
+    }
+  ]
+}
