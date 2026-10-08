@@ -4,6 +4,6 @@
     "Sid": "ListAndRead",
     "Effect": "Allow",
     "Action": ["s3:ListBucket", "s3:GetObject"],
-    "Resource": "arn:aws:s3:::scs-lab-w1-797273591655/*"
+    "Resource": "arn:aws:s3:::scs-lab-w1-111122223333/*"
   }]
 }

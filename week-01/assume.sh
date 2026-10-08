@@ -2,7 +2,7 @@
 # usage: eval "$(./assume.sh <role-name> [session-policy-file])"
 # prints export lines for temporary creds of the named role in scs-general
 set -euo pipefail
-ROLE="$1"; ACCT=797273591655
+ROLE="$1"; ACCT=111122223333
 if [ $# -ge 2 ]; then
   CREDS=$(command aws --profile scs-general --region us-east-2 sts assume-role \
     --role-arn "arn:aws:iam::${ACCT}:role/${ROLE}" --role-session-name "lab-$(date +%s)" \

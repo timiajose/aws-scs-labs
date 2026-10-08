@@ -29,10 +29,10 @@
         "iam:AttachRolePolicy",
         "iam:TagRole"
       ],
-      "Resource": "arn:aws:iam::797273591655:role/app-*",
+      "Resource": "arn:aws:iam::111122223333:role/app-*",
       "Condition": {
         "StringEquals": {
-          "iam:PermissionsBoundary": "arn:aws:iam::797273591655:policy/DeveloperBoundary"
+          "iam:PermissionsBoundary": "arn:aws:iam::111122223333:policy/DeveloperBoundary"
         }
       }
     },
@@ -49,7 +49,7 @@
         "iam:DetachRolePolicy",
         "iam:UntagRole"
       ],
-      "Resource": "arn:aws:iam::797273591655:role/app-*"
+      "Resource": "arn:aws:iam::111122223333:role/app-*"
     },
     {
       "Sid": "ValidatePolicies",

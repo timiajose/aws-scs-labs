@@ -3,7 +3,7 @@
   "Statement": [{
     "Sid": "TrustGeneralAccount",
     "Effect": "Allow",
-    "Principal": { "AWS": "arn:aws:iam::797273591655:root" },
+    "Principal": { "AWS": "arn:aws:iam::111122223333:root" },
     "Action": "sts:AssumeRole",
     "Condition": { "StringEquals": { "sts:ExternalId": "scs-week1" } }
   }]

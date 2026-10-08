@@ -5,8 +5,8 @@
     "Effect": "Allow",
     "Action": ["s3:GetObject", "s3:ListBucket"],
     "Resource": [
-      "arn:aws:s3:::scs-lab-w1-797273591655",
-      "arn:aws:s3:::scs-lab-w1-797273591655/*"
+      "arn:aws:s3:::scs-lab-w1-111122223333",
+      "arn:aws:s3:::scs-lab-w1-111122223333/*"
     ]
   }]
 }

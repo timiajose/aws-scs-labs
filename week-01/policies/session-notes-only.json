@@ -4,6 +4,6 @@
     "Sid": "ThisSessionMayOnlyTouchNotes",
     "Effect": "Allow",
     "Action": "s3:GetObject",
-    "Resource": "arn:aws:s3:::scs-lab-w1-797273591655/notes/*"
+    "Resource": "arn:aws:s3:::scs-lab-w1-111122223333/notes/*"
   }]
 }

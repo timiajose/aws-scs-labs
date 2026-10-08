@@ -3,7 +3,7 @@
   "Statement": [{
     "Sid": "OnlyLabReaderMayAssumeMe",
     "Effect": "Allow",
-    "Principal": { "AWS": "arn:aws:iam::797273591655:role/lab-reader" },
+    "Principal": { "AWS": "arn:aws:iam::111122223333:role/lab-reader" },
     "Action": "sts:AssumeRole"
   }]
 }

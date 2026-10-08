@@ -6,11 +6,11 @@
     "Principal": "*",
     "Action": "s3:*",
     "Resource": [
-      "arn:aws:s3:::scs-lab-w1-797273591655",
-      "arn:aws:s3:::scs-lab-w1-797273591655/*"
+      "arn:aws:s3:::scs-lab-w1-111122223333",
+      "arn:aws:s3:::scs-lab-w1-111122223333/*"
     ],
     "Condition": {
-      "StringNotEqualsIfExists": { "aws:PrincipalAccount": "797273591655" },
+      "StringNotEqualsIfExists": { "aws:PrincipalAccount": "111122223333" },
       "BoolIfExists": { "aws:PrincipalIsAWSService": "false" }
     }
   }]

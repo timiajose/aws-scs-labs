@@ -3,8 +3,8 @@
   "Statement": [{
     "Sid": "ResourcePolicyGrantsWriteToLabReader",
     "Effect": "Allow",
-    "Principal": { "AWS": "arn:aws:iam::797273591655:role/lab-reader" },
+    "Principal": { "AWS": "arn:aws:iam::111122223333:role/lab-reader" },
     "Action": ["s3:GetObject", "s3:PutObject"],
-    "Resource": "arn:aws:s3:::scs-lab-w1-797273591655/*"
+    "Resource": "arn:aws:s3:::scs-lab-w1-111122223333/*"
   }]
 }

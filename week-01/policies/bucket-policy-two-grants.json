@@ -4,16 +4,16 @@
     {
       "Sid": "SameAccountRoleWithNoIdentityPolicy",
       "Effect": "Allow",
-      "Principal": { "AWS": "arn:aws:iam::797273591655:role/lab-nopolicy" },
+      "Principal": { "AWS": "arn:aws:iam::111122223333:role/lab-nopolicy" },
       "Action": "s3:GetObject",
-      "Resource": "arn:aws:s3:::scs-lab-w1-797273591655/notes/*"
+      "Resource": "arn:aws:s3:::scs-lab-w1-111122223333/notes/*"
     },
     {
       "Sid": "CrossAccountRoleFromProduction",
       "Effect": "Allow",
-      "Principal": { "AWS": "arn:aws:iam::261175718715:role/lab-xacct-reader" },
+      "Principal": { "AWS": "arn:aws:iam::222233334444:role/lab-xacct-reader" },
       "Action": "s3:GetObject",
-      "Resource": "arn:aws:s3:::scs-lab-w1-797273591655/notes/*"
+      "Resource": "arn:aws:s3:::scs-lab-w1-111122223333/notes/*"
     }
   ]
 }

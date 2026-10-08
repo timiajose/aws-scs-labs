@@ -4,6 +4,6 @@
     "Sid": "SessionPolicyTriesToGrantWrite",
     "Effect": "Allow",
     "Action": ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"],
-    "Resource": "arn:aws:s3:::scs-lab-w1-797273591655/*"
+    "Resource": "arn:aws:s3:::scs-lab-w1-111122223333/*"
   }]
 }

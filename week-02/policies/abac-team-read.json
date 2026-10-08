@@ -5,7 +5,7 @@
       "Sid": "ReadOnlyObjectsTaggedWithMyTeam",
       "Effect": "Allow",
       "Action": "s3:GetObject",
-      "Resource": "arn:aws:s3:::scs-lab-w1-797273591655/*",
+      "Resource": "arn:aws:s3:::scs-lab-w1-111122223333/*",
       "Condition": {
         "StringEquals": {
           "s3:ExistingObjectTag/team": "${aws:PrincipalTag/team}"
@@ -16,7 +16,7 @@
       "Sid": "ListBucketSoTheConsoleWorks",
       "Effect": "Allow",
       "Action": "s3:ListBucket",
-      "Resource": "arn:aws:s3:::scs-lab-w1-797273591655"
+      "Resource": "arn:aws:s3:::scs-lab-w1-111122223333"
     }
   ]
 }

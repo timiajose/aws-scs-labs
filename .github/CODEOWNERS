@@ -1,0 +1,22 @@
+# CODEOWNERS routes review by RISK, not by volume.
+# The security owner is pulled in only when sensitive files change.
+#
+# Syntax: <path pattern>  <owner(s)>
+# In a real org these would be @org/security-team, @org/platform-team.
+
+# Default: everything needs a review from the repo owner.
+*                               @timiajose
+
+# The pipeline itself is privileged - a PR that edits these could delete
+# its own gates. Changing them must be reviewed deliberately.
+/.github/workflows/             @timiajose
+/.github/CODEOWNERS             @timiajose
+
+# Policy-as-code rules: weakening a guard rule weakens every future PR.
+/week-03/pipeline/rules.guard   @timiajose
+
+# Anything that grants AWS permissions.
+**/policies/                    @timiajose
+**/iam-policies/                @timiajose
+**/*trust*.json                 @timiajose
+**/*role*.json                  @timiajose

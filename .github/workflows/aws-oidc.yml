@@ -50,9 +50,9 @@ jobs:
       - name: Assume the READ-ONLY validate role
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::797273591655:role/GitHubValidateRole
+          role-to-assume: arn:aws:iam::${{ vars.AWS_ACCOUNT_ID }}:role/GitHubValidateRole
           role-session-name: gha-validate-${{ github.run_id }}
-          aws-region: us-east-2
+          aws-region: ${{ vars.AWS_REGION }}
 
       - name: Access Analyzer validate-policy
         run: |
@@ -86,9 +86,9 @@ jobs:
       - name: Assume the DEPLOY role
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::797273591655:role/GitHubDeployRole
+          role-to-assume: arn:aws:iam::${{ vars.AWS_ACCOUNT_ID }}:role/GitHubDeployRole
           role-session-name: gha-deploy-${{ github.run_id }}
-          aws-region: us-east-2
+          aws-region: ${{ vars.AWS_REGION }}
 
       - name: Who am I?
         run: aws sts get-caller-identity

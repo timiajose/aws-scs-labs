@@ -6,19 +6,19 @@
       "Effect": "Allow",
       "Principal": { "Service": "config.amazonaws.com" },
       "Action": ["s3:GetBucketAcl", "s3:ListBucket"],
-      "Resource": "arn:aws:s3:::scs-config-797273591655",
-      "Condition": { "StringEquals": { "AWS:SourceAccount": "797273591655" } }
+      "Resource": "arn:aws:s3:::scs-config-111122223333",
+      "Condition": { "StringEquals": { "AWS:SourceAccount": "111122223333" } }
     },
     {
       "Sid": "AWSConfigBucketDelivery",
       "Effect": "Allow",
       "Principal": { "Service": "config.amazonaws.com" },
       "Action": "s3:PutObject",
-      "Resource": "arn:aws:s3:::scs-config-797273591655/AWSLogs/797273591655/Config/*",
+      "Resource": "arn:aws:s3:::scs-config-111122223333/AWSLogs/111122223333/Config/*",
       "Condition": {
         "StringEquals": {
           "s3:x-amz-acl": "bucket-owner-full-control",
-          "AWS:SourceAccount": "797273591655"
+          "AWS:SourceAccount": "111122223333"
         }
       }
     }

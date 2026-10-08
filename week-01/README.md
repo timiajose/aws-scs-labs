@@ -5,7 +5,7 @@ Three accounts set up safely. Can write and explain identity policy, resource po
 
 ## Checklist
 ### Setup (Saturday, hour 1)
-- [x] Accounts (Sep 22): org-management `213008104384`, general `797273591655`, production `261175718715`. Org `o-gd1zxowg4r`. Home region `us-east-2`.
+- [x] Accounts (Sep 22): org-management `333344445555`, general `111122223333`, production `222233334444`. Org `o-exampleorgid`. Home region `us-east-2`.
 - [x] Management root: MFA on, no keys, no IAM users. Member roots: **centralized root access enabled** (RootCredentialsManagement + RootSessions) — no root creds exist in member accounts. Stale 2025 `AKIA…` key retired from laptop.
 - [x] Identity Center (multi-Region, us-east-2), user `dolly`, `AdministratorAccess` permission set on all three accounts. Profiles `scs-org` / `scs-general` / `scs-prod` via `sso-session scs-lab`.
 - [x] Budgets in management account: $10 (alert 80% actual + forecast), $25 (alert 100% actual + forecast) → gmail.
