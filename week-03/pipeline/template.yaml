@@ -22,3 +22,6 @@ Resources:
               - Effect: Allow
                 Action: s3:GetObject
                 Resource: !Sub 'arn:aws:s3:::scs-lab-w1-${AWS::AccountId}/notes/*'
+              - Effect: Allow
+                Action: iam:PassRole
+                Resource: '*'
