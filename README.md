@@ -35,3 +35,4 @@ All access via `aws sso login --profile <name>`. No IAM user access keys, ever. 
 aws sso login --sso-session scs-lab     # once per ~8 h; opens browser
 aws sts get-caller-identity --profile scs-general
 ```
+# direct push attempt on main
