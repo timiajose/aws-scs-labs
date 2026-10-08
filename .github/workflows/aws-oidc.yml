@@ -17,16 +17,29 @@ jobs:
   static-checks:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.3.1
 
       - name: Install cfn-lint
-        run: pipx install cfn-lint
+        run: pipx install 'cfn-lint==1.57.2'
 
       - name: Install cfn-guard
         run: |
           curl --proto '=https' --tlsv1.2 -sSf \
-            https://raw.githubusercontent.com/aws-cloudformation/cloudformation-guard/main/install-guard.sh | sh
+            https://raw.githubusercontent.com/aws-cloudformation/cloudformation-guard/814bd00a4e6d761e8b5c9f615dd510b1a2a7c374/install-guard.sh \
+            -o /tmp/install-guard.sh
+          sh /tmp/install-guard.sh
           echo "$HOME/.guard/bin" >> "$GITHUB_PATH"
+
+      # Attacker-controlled input (PR titles, branch names, commit messages) must
+      # never be interpolated directly into a run: block - GitHub substitutes the
+      # text into the script BEFORE the shell parses it, so data becomes code.
+      # Passing it through env: keeps the script fixed and the value a single string.
+      - name: Context (parameterized - safe)
+        if: github.event_name == 'pull_request'
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+        run: echo "Validating PR by $PR_AUTHOR - $PR_TITLE"
 
       - name: cfn-lint (is the template valid CloudFormation?)
         run: cfn-lint week-03/pipeline/template.yaml
@@ -45,10 +58,10 @@ jobs:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.3.1
 
       - name: Assume the READ-ONLY validate role
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a # v4.3.1
         with:
           role-to-assume: arn:aws:iam::797273591655:role/GitHubValidateRole
           role-session-name: gha-validate-${{ github.run_id }}
@@ -81,10 +94,10 @@ jobs:
     needs: static-checks
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.3.1
 
       - name: Assume the DEPLOY role
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a # v4.3.1
         with:
           role-to-assume: arn:aws:iam::797273591655:role/GitHubDeployRole
           role-session-name: gha-deploy-${{ github.run_id }}
