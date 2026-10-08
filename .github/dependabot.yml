@@ -1,0 +1,12 @@
+# Dependabot keeps pinned SHAs current.
+# Pinning without renewal trades "silent malicious update" for
+# "silently running stale, vulnerable code" - this is the other half.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "deps(actions)"
