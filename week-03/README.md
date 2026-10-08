@@ -14,7 +14,7 @@ Flow: PR → cfn-lint → cfn-guard → Access Analyzer validate-policy → revi
 
 - [ ] `pipeline/template.yaml` — the week-1 `AppServerRole` as CloudFormation (trust EC2, S3 on one bucket, permission boundary attached)
 - [ ] `pipeline/rules.guard` — three rules: every `AWS::IAM::Role` has `PermissionsBoundary`; no `Principal: "*"`; no `iam:PassRole` with `Resource: "*"`
-- [ ] `policies/github-oidc-trust.json` — deploy role trust: `token.actions.githubusercontent.com`, `sub` = `repo:ajosedolapo/aws-scs-labs:ref:refs/heads/main`, `aud` = `sts.amazonaws.com`
+- [ ] `policies/github-oidc-trust.json` — deploy role trust: `token.actions.githubusercontent.com`, `sub` = `repo:timiajose/aws-scs-labs:ref:refs/heads/main`, `aud` = `sts.amazonaws.com`
 - [ ] `policies/github-deploy-permissions.json` — least privilege: `cloudformation:*` on the lab stack, `iam:CreateRole/AttachRolePolicy/...` on `app-*` **with** `iam:PermissionsBoundary` condition, `iam:PassRole` on `app-*`
 - [ ] `.github/workflows/deploy.yml` — `pull_request`: lint + guard + `aws accessanalyzer validate-policy`; `push` to `main`: `aws-actions/configure-aws-credentials` with `role-to-assume` → `aws cloudformation deploy`
 - [ ] Green run on `main`; role appears in the account

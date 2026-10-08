@@ -1,0 +1,17 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [{
+    "Sid": "OnlyGeneralAccountPrincipalsMayTouchThisBucket",
+    "Effect": "Deny",
+    "Principal": "*",
+    "Action": "s3:*",
+    "Resource": [
+      "arn:aws:s3:::scs-lab-w1-797273591655",
+      "arn:aws:s3:::scs-lab-w1-797273591655/*"
+    ],
+    "Condition": {
+      "StringNotEqualsIfExists": { "aws:PrincipalAccount": "797273591655" },
+      "BoolIfExists": { "aws:PrincipalIsAWSService": "false" }
+    }
+  }]
+}

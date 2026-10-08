@@ -1,0 +1,9 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [{
+    "Sid": "FixBucketVersioningOnly",
+    "Effect": "Allow",
+    "Action": ["s3:PutBucketVersioning", "s3:GetBucketVersioning"],
+    "Resource": "arn:aws:s3:::*"
+  }]
+}
