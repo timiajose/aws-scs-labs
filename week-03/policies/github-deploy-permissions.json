@@ -1,9 +1,61 @@
 {
   "Version": "2012-10-17",
-  "Statement": [{
-    "Sid": "ProveItWorks",
-    "Effect": "Allow",
-    "Action": ["s3:ListAllMyBuckets"],
-    "Resource": "*"
-  }]
+  "Statement": [
+    {
+      "Sid": "ManageTheLabStack",
+      "Effect": "Allow",
+      "Action": [
+        "cloudformation:CreateStack",
+        "cloudformation:UpdateStack",
+        "cloudformation:DeleteStack",
+        "cloudformation:DescribeStacks",
+        "cloudformation:DescribeStackEvents",
+        "cloudformation:DescribeStackResources",
+        "cloudformation:GetTemplateSummary",
+        "cloudformation:CreateChangeSet",
+        "cloudformation:DescribeChangeSet",
+        "cloudformation:ExecuteChangeSet",
+        "cloudformation:DeleteChangeSet",
+        "cloudformation:ListStacks"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "CreateAppRolesButOnlyWithTheBoundary",
+      "Effect": "Allow",
+      "Action": [
+        "iam:CreateRole",
+        "iam:PutRolePolicy",
+        "iam:AttachRolePolicy",
+        "iam:TagRole"
+      ],
+      "Resource": "arn:aws:iam::797273591655:role/app-*",
+      "Condition": {
+        "StringEquals": {
+          "iam:PermissionsBoundary": "arn:aws:iam::797273591655:policy/DeveloperBoundary"
+        }
+      }
+    },
+    {
+      "Sid": "ManageAppRolesOtherwise",
+      "Effect": "Allow",
+      "Action": [
+        "iam:GetRole",
+        "iam:GetRolePolicy",
+        "iam:ListRolePolicies",
+        "iam:ListAttachedRolePolicies",
+        "iam:DeleteRole",
+        "iam:DeleteRolePolicy",
+        "iam:DetachRolePolicy",
+        "iam:UntagRole"
+      ],
+      "Resource": "arn:aws:iam::797273591655:role/app-*"
+    },
+    {
+      "Sid": "ValidatePolicies",
+      "Effect": "Allow",
+      "Action": "access-analyzer:ValidatePolicy",
+      "Resource": "*"
+    }
+  ]
 }

@@ -1,8 +1,9 @@
-name: aws-oidc-test
+name: governed-pipeline
 
 on:
   push:
     branches: [ main ]
+  pull_request:
   workflow_dispatch:
 
 permissions:
@@ -10,25 +11,99 @@ permissions:
   contents: read
 
 jobs:
-  whoami:
+  # ---------------------------------------------------------------
+  # Gate 1 + 2: template validity and org policy rules. No AWS access.
+  # ---------------------------------------------------------------
+  static-checks:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Show the OIDC claims GitHub is sending
-        run: |
-          TOKEN=$(curl -sH "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
-            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=sts.amazonaws.com" | jq -r .value)
-          P=$(echo "$TOKEN" | cut -d. -f2)
-          P="${P}$(printf '=%.0s' $(seq $(( (4 - ${#P} % 4) % 4 ))))"
-          echo "$P" | tr '_-' '/+' | base64 -d | jq '{iss, aud, sub, repository, ref, workflow_ref}'
+      - name: Install cfn-lint
+        run: pipx install cfn-lint
 
-      - name: Assume AWS role via OIDC
+      - name: Install cfn-guard
+        run: |
+          curl --proto '=https' --tlsv1.2 -sSf \
+            https://raw.githubusercontent.com/aws-cloudformation/cloudformation-guard/main/install-guard.sh | sh
+          echo "$HOME/.guard/bin" >> "$GITHUB_PATH"
+
+      - name: cfn-lint (is the template valid CloudFormation?)
+        run: cfn-lint week-03/pipeline/template.yaml
+
+      - name: cfn-guard (does it meet our org rules?)
+        run: |
+          cfn-guard validate \
+            --data week-03/pipeline/template.yaml \
+            --rules week-03/pipeline/rules.guard \
+            --show-summary pass,fail
+
+  # ---------------------------------------------------------------
+  # Gate 3: IAM policy linting. Pull requests only, read-only role.
+  # ---------------------------------------------------------------
+  policy-lint:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Assume the READ-ONLY validate role
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::797273591655:role/GitHubValidateRole
+          role-session-name: gha-validate-${{ github.run_id }}
+          aws-region: us-east-2
+
+      - name: Access Analyzer validate-policy
+        run: |
+          fail=0
+          for f in week-03/pipeline/iam-policies/*.json; do
+            echo "::group::$f"
+            out=$(aws accessanalyzer validate-policy \
+                    --policy-document "file://$f" \
+                    --policy-type IDENTITY_POLICY \
+                    --query 'findings[?findingType==`ERROR` || findingType==`SECURITY_WARNING`]' \
+                    --output json)
+            echo "$out"
+            if [ "$out" != "[]" ]; then
+              echo "::error file=$f::ERROR or SECURITY_WARNING findings in $f"
+              fail=1
+            fi
+            echo "::endgroup::"
+          done
+          exit $fail
+
+  # ---------------------------------------------------------------
+  # Deploy: main branch only, after the gates pass.
+  # ---------------------------------------------------------------
+  deploy:
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: static-checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Assume the DEPLOY role
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::797273591655:role/GitHubDeployRole
-          role-session-name: gha-${{ github.run_id }}
+          role-session-name: gha-deploy-${{ github.run_id }}
           aws-region: us-east-2
 
-      - name: Who am I in AWS?
+      - name: Who am I?
         run: aws sts get-caller-identity
+
+      - name: Deploy the stack
+        run: |
+          aws cloudformation deploy \
+            --template-file week-03/pipeline/template.yaml \
+            --stack-name scs-week3-app-role \
+            --capabilities CAPABILITY_NAMED_IAM \
+            --no-fail-on-empty-changeset
+
+      - name: Show what was created
+        run: |
+          aws cloudformation describe-stacks --stack-name scs-week3-app-role \
+            --query 'Stacks[0].[StackName,StackStatus]' --output text
+          aws iam get-role --role-name app-ingest-role \
+            --query 'Role.[RoleName,PermissionsBoundary.PermissionsBoundaryArn]' --output text

@@ -1,0 +1,23 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Deliberately non-compliant - used to prove the guard rules fire
+
+Resources:
+  SloppyRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: sloppy-role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: '*'
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: too-much
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: iam:PassRole
+                Resource: '*'

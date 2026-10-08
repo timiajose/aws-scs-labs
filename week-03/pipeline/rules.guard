@@ -1,0 +1,48 @@
+#
+# Policy-as-code gates for IAM resources in CloudFormation templates.
+#
+let iam_roles = Resources.*[ Type == 'AWS::IAM::Role' ]
+
+#
+# Rule 1: every IAM role must carry a permissions boundary.
+#
+rule roles_must_have_a_permissions_boundary when %iam_roles !empty {
+  %iam_roles.Properties.PermissionsBoundary exists
+  <<
+    VIOLATION: every AWS::IAM::Role must set PermissionsBoundary.
+    Without it, a created role can exceed its creator's own permissions.
+  >>
+}
+
+#
+# Rule 2: a trust policy must not allow any AWS principal.
+# Principal is a map - {"Service": ...} or {"AWS": ...} - so we check the AWS key
+# only, and only when it is present. A Service principal is fine.
+#
+rule no_wildcard_aws_principal_in_trust_policy when %iam_roles !empty {
+  %iam_roles.Properties.AssumeRolePolicyDocument.Statement[*] {
+    when Principal.AWS exists {
+      Principal.AWS != "*"
+      <<
+        VIOLATION: trust policy uses Principal.AWS "*" - ANY AWS principal
+        in ANY account could assume this role.
+      >>
+    }
+  }
+}
+
+#
+# Rule 3: iam:PassRole must never be granted on Resource "*".
+#
+rule no_passrole_on_star when %iam_roles !empty {
+  %iam_roles.Properties.Policies[*].PolicyDocument.Statement[*] {
+    when Action == "iam:PassRole" {
+      Resource != "*"
+      <<
+        VIOLATION: iam:PassRole on Resource "*" allows passing ANY role to ANY
+        service - a privilege escalation path. Scope to specific role ARNs and
+        add the iam:PassedToService condition.
+      >>
+    }
+  }
+}

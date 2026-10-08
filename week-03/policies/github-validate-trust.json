@@ -1,0 +1,17 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [{
+    "Sid": "GitHubActionsPullRequestsOnly",
+    "Effect": "Allow",
+    "Principal": {
+      "Federated": "arn:aws:iam::797273591655:oidc-provider/token.actions.githubusercontent.com"
+    },
+    "Action": "sts:AssumeRoleWithWebIdentity",
+    "Condition": {
+      "StringEquals": {
+        "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
+        "token.actions.githubusercontent.com:sub": "repo:timiajose@129914602/aws-scs-labs@1396122049:pull_request"
+      }
+    }
+  }]
+}

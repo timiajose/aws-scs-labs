@@ -1,0 +1,24 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Week 3 lab - app role deployed through a governed pipeline
+
+Resources:
+  AppIngestRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: app-ingest-role
+      PermissionsBoundary: !Sub 'arn:aws:iam::${AWS::AccountId}:policy/DeveloperBoundary'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: read-uploads
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: s3:GetObject
+                Resource: !Sub 'arn:aws:s3:::scs-lab-w1-${AWS::AccountId}/notes/*'
