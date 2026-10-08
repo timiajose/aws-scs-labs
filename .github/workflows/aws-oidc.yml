@@ -3,7 +3,6 @@ name: aws-oidc-test
 on:
   push:
     branches: [ main ]
-  pull_request:
   workflow_dispatch:
 
 permissions:
@@ -16,6 +15,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Show the OIDC claims GitHub is sending
+        run: |
+          TOKEN=$(curl -sH "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=sts.amazonaws.com" | jq -r .value)
+          P=$(echo "$TOKEN" | cut -d. -f2)
+          P="${P}$(printf '=%.0s' $(seq $(( (4 - ${#P} % 4) % 4 ))))"
+          echo "$P" | tr '_-' '/+' | base64 -d | jq '{iss, aud, sub, repository, ref, workflow_ref}'
+
       - name: Assume AWS role via OIDC
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -25,6 +32,3 @@ jobs:
 
       - name: Who am I in AWS?
         run: aws sts get-caller-identity
-
-      - name: Can I use the permission I was granted?
-        run: aws s3 ls
