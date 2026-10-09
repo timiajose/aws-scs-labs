@@ -46,3 +46,33 @@ rule no_passrole_on_star when %iam_roles !empty {
     }
   }
 }
+
+#
+# Rule 4: secrets must never be plaintext in Lambda environment variables.
+#
+# Note on method: this rule ENUMERATES common secret-ish variable names, which is
+# the weaker approach we generally avoid. It is here because cfn-guard cannot
+# pattern-match on key names. The real control is structural - the function fetches
+# from Secrets Manager at runtime using its execution role, or the template uses a
+# dynamic reference '{{resolve:secretsmanager:...}}' which CloudFormation resolves
+# at deploy time and never stores.
+#
+# Secret scanners will NOT catch this: a placeholder like "ChangeMe123!" is
+# low-entropy and looks deliberate. The structure is the finding, not the value.
+#
+let lambdas = Resources.*[ Type == 'AWS::Lambda::Function' ]
+
+rule no_plaintext_secrets_in_lambda_env when %lambdas !empty {
+  %lambdas.Properties.Environment.Variables.DB_PASSWORD not exists
+  %lambdas.Properties.Environment.Variables.PASSWORD not exists
+  %lambdas.Properties.Environment.Variables.SECRET not exists
+  %lambdas.Properties.Environment.Variables.API_KEY not exists
+  %lambdas.Properties.Environment.Variables.PRIVATE_KEY not exists
+  %lambdas.Properties.Environment.Variables.AWS_SECRET_ACCESS_KEY not exists
+  <<
+    VIOLATION: a secret-named environment variable is set on a Lambda function.
+    Environment variables are visible via lambda:GetFunctionConfiguration, in the
+    console, and in CloudFormation stack events. Use a Secrets Manager dynamic
+    reference, or fetch at runtime with the execution role.
+  >>
+}
