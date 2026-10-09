@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# Local pre-commit gate: block obvious credential patterns before they enter history.
+# This is a convenience for the author, NOT a control - it lives in the repo and
+# can be skipped with `git commit --no-verify`. The real controls are GitHub push
+# protection (remote, cannot be skipped silently) and having no long-lived
+# credentials to leak at all (SCP-enforced, federation only).
+set -u
+staged=$(git diff --cached --name-only --diff-filter=ACM)
+[ -z "$staged" ] && exit 0
+
+patterns=(
+  'AKIA[0-9A-Z]{16}'
+  'ASIA[0-9A-Z]{16}'
+  'aws_secret_access_key[[:space:]]*='
+  'BEGIN (RSA|OPENSSH|EC|PGP) PRIVATE KEY'
+  'gh[pousr]_[A-Za-z0-9]{36}'
+  'xox[baprs]-[A-Za-z0-9-]{10,}'
+)
+
+found=0
+for f in $staged; do
+  [ -f "$f" ] || continue
+  for p in "${patterns[@]}"; do
+    if grep -nEI "$p" "$f" >/dev/null 2>&1; then
+      echo "BLOCKED: possible credential in $f (pattern: $p)"
+      found=1
+    fi
+  done
+done
+
+if [ $found -ne 0 ]; then
+  cat <<'MSG'
+
+Commit blocked by .githooks/pre-commit.
+
+If this is a real credential:
+  1. Do NOT commit it. Move it to Secrets Manager / Parameter Store.
+  2. If it was ever real and ever pushed, ROTATE IT FIRST - cleaning history is cosmetic.
+
+If this is a false positive, re-run with: git commit --no-verify
+MSG
+  exit 1
+fi
+exit 0
