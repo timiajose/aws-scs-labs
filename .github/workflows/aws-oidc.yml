@@ -44,6 +44,21 @@ jobs:
       - name: cfn-lint (is the template valid CloudFormation?)
         run: cfn-lint week-03/pipeline/template.yaml
 
+      - name: Install Checkov
+        run: pipx install 'checkov==3.2.484'
+
+      # Inherited rules: ~1000 known misconfiguration patterns we did not write.
+      # Tuned: the skipped checks are reliability concerns, not security ones.
+      # An unfiltered gate teaches people that red is normal, which kills the gate.
+      # ai-review/ holds deliberately-bad fixtures used to prove rules fire.
+      - name: Checkov (known misconfiguration patterns)
+        run: |
+          checkov --directory week-03/pipeline \
+            --framework cloudformation,secrets \
+            --skip-path 'week-03/pipeline/fixtures' \
+            --skip-check CKV_AWS_115,CKV_AWS_116 \
+            --compact --quiet
+
       - name: cfn-guard (does it meet our org rules?)
         run: |
           cfn-guard validate \

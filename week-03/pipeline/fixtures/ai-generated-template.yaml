@@ -1,0 +1,52 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Document processing pipeline for patient uploads
+
+Resources:
+  DocumentBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub 'patient-documents-${AWS::AccountId}'
+
+  DocumentProcessorRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: document-processor-role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: document-access
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:ListBucket
+                Resource: '*'
+              - Effect: Allow
+                Action: secretsmanager:GetSecretValue
+                Resource: '*'
+
+  DocumentProcessor:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: document-processor
+      Runtime: python3.11
+      Handler: index.handler
+      Role: !GetAtt DocumentProcessorRole.Arn
+      Environment:
+        Variables:
+          DB_PASSWORD: ChangeMe123!
+          BUCKET_NAME: !Ref DocumentBucket
+      Code:
+        ZipFile: |
+          def handler(event, context):
+              return {"statusCode": 200}
